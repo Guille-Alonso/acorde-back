@@ -1,16 +1,14 @@
 const { Router } = require("express");
-const { getUsers, login, getAuthStatus, editarConstraseña, agregarUsuario, actualizarUser, borrarUsuario, editarConstraseñaUsuario, actualizarRelevamiento, noticias, actualizarCampoNoticiasParaTodos, ocultarCampoNoticiasParaTodos } = require("../controllers/usersControllers");
+const { getUsers, login, getAuthStatus, editarConstraseña, agregarUsuario, actualizarUser, borrarUsuario, editarConstraseñaUsuario, actualizarRelevamiento, noticias, actualizarCampoNoticiasParaTodos, ocultarCampoNoticiasParaTodos, listarUsuarios } = require("../controllers/usersControllers");
 const verifyRole = require("../middlewares/verifyRole");
-const verifyRolEstadistica = require("../middlewares/verifyRolEstadistica");
-const verifyRoleSupervisor = require("../middlewares/verifyRoleSupervisor");
 const auth = require("../middlewares/auth");
 const validateFields = require("../middlewares/validateFields");
 const { check } = require("express-validator");
-const verifyRoleSupervEstad = require("../middlewares/verifyRolEstadSuper");
 
 const router = Router();
 
 router.get("/email/:email?", getUsers)
+router.get("/listar", listarUsuarios)
 router.get("/authStatus", auth, getAuthStatus);
 router.post(
   "/login",
@@ -28,7 +26,7 @@ router.put(
   "/editPassword/users", auth, editarConstraseñaUsuario
 )
 router.put("/actualizarUsuario/:id", auth, verifyRole, actualizarUser);
-router.put("/actualizarRelevamiento/:id", auth, verifyRoleSupervisor, actualizarRelevamiento);
+// router.put("/actualizarRelevamiento/:id", auth, verifyRoleSupervisor, actualizarRelevamiento);
 router.put("/noticias/:id", auth, noticias);
 router.get("/noticias/reset", auth, verifyRole, actualizarCampoNoticiasParaTodos);
 router.get("/noticias/ocultar", auth, verifyRole, ocultarCampoNoticiasParaTodos);
