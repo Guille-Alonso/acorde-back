@@ -13,7 +13,7 @@ const PreInscripcionSchema = new mongoose.Schema({
   clases: { type: [String], required: true },
   dias: { type: [String], required: true },
   participaMuestra: { type: Boolean, required: true },
-  estiloMusica: { type: String, required: true },
+  estiloMusica: { type: String },
   comentario: { type: String },
   otroInstrumento: { type: String },
 });
