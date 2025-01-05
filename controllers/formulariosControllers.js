@@ -1,5 +1,5 @@
 const { validationResult } = require('express-validator');
-const PreInscripcion = require('../models/preInscripcion');
+const PreInscripcion = require('../models/PreInscripcion');
 
 const guardarPreInscripcion = async (req, res) => {
 //   const errors = validationResult(req);
