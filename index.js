@@ -8,6 +8,7 @@ const morgan = require('morgan');
 
 const connectDB = require('./config/db');
 const usersRoutes = require('./routes/usersRoutes')
+const preInscripcionRoutes = require('./routes/preInscripcionRoutes')
 
 const app = express();
 app.use(cors());
@@ -21,5 +22,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
 
 app.use('/usuarios', usersRoutes)
+app.use('/formularios', preInscripcionRoutes)
 
 app.listen(PORT, () => { console.log(`server listening on port ${PORT}`) })
