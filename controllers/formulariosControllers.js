@@ -44,13 +44,18 @@ const guardarPreInscripcion = async (req, res) => {
 
     let mail = {
       from: "", // Agrega tu dirección de correo
-      to: "guilloalonsot@gmail.com",
+      to: "josefinaalonsotorino@gmail.com",
       subject: "Pre-Inscripción Acorde 2025",
       text: `Alumno: ${req.body.nombre} ${req.body.apellido}.
 Padre / Madre: ${req.body.nombrePadre} ${req.body.apellidoPadre}.
 Teléfono: ${req.body.telefonoPadre}.
 Clases: ${clases}.
-Días: ${dias}.`,
+Otro Instrumento: ${req.body.otroInstrumento}.
+Días: ${dias}.
+Participa en muestra: ${req.body.participaMuestra ? "si" : "no"}.
+Estilo de música preferido: ${req.body.estiloMusica}.
+Comentarios: ${req.body.comentario}.
+`,
     };
 
     // Enviar el correo de forma asíncrona
