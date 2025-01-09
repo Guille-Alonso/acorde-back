@@ -78,8 +78,8 @@ Comentarios: ${req.body.comentario}.
 const listarPreInscriptos = async (req, res) => {
   try {
    
-      const users = await PreInscripcion.find();
-      res.status(200).json({ users });
+      const preInscriptos = await PreInscripcion.find();
+      res.status(200).json({ preInscriptos });
     
   } catch (error) {
     res

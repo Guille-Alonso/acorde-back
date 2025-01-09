@@ -24,5 +24,5 @@ router.post(
   guardarPreInscripcion
 );
 
-router.get("/listar", listarPreInscriptos)
+router.get("/listarPreInscriptos", listarPreInscriptos)
 module.exports = router;
