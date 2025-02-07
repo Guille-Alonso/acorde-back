@@ -1,7 +1,9 @@
+const { default: mongoose } = require('mongoose');
 const Horario = require('../models/Horario');
 const Inscripcion = require('../models/Inscripcion');
 const PreInscripcion = require('../models/PreInscripcion');
 const { transporter } = require('../utils/sendEmail');
+const { obtenerFechaHoraArgentina } = require('../utils/obtenerFechaYHora');
 
 // const guardarPreInscripcion = async (req, res) => {
 
@@ -130,23 +132,107 @@ const obtenerHorarios = async (req, res) => {
 
 
 const guardarInscripcion = async (req, res) => {
+  const { idDisciplina } = req.body; // Array de IDs de disciplinas desde el request
+
   try {
-    console.log(req.body);
+    // Validar que idDisciplina sea un array y no esté vacío
+    if (!Array.isArray(idDisciplina) || idDisciplina.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "Debe proporcionar un array de IDs de disciplinas." });
+    }
 
-    // Guardar pre-inscripción
-    const inscripcion = new Inscripcion(req.body);
+    // Búsqueda previa: verificar si alguna disciplina tiene cupo igual a 0
+    const disciplinasSinCupo = await Horario.aggregate([
+      {
+        $unwind: "$dias", // Desanidar el array "dias"
+      },
+      {
+        $unwind: "$dias.disciplinas", // Desanidar el array "disciplinas"
+      },
+      {
+        $match: {
+          "dias.disciplinas._id": { $in: idDisciplina.map((id) => new mongoose.Types.ObjectId(id)) }, // Filtrar por ID de disciplinas
+          "dias.disciplinas.cupo": 0, // Filtrar disciplinas con cupo igual a 0
+        },
+      },
+      {
+        $project: {
+          _id: 0, // Excluir el ID del documento principal
+          disciplinaId: "$dias.disciplinas._id",
+          disciplinaNombre: "$dias.disciplinas.disciplina", // Obtener el nombre de la disciplina
+          dia: "$dias.dia",
+          horario: "$dias.horario"
+        },
+      },
+    ]);
+
+    if (disciplinasSinCupo.length > 0) {
+      // Crear un mensaje detallado para cada disciplina sin cupo
+      const detalles = disciplinasSinCupo.map((disciplina) => {
+        const { disciplinaNombre, dia, horario } = disciplina;
+        return `Disciplina: ${disciplinaNombre}, Día: ${dia}, Horario: ${horario}`;
+      });
+    
+      // Concatenar los detalles en un único mensaje
+      const mensajeCompleto = `Algunas disciplinas no tienen cupo disponible. ${detalles.join("; ")}`;
+    
+      return res.status(400).json({
+        message: mensajeCompleto,
+      });
+    }
+
+    // Si todas las disciplinas tienen cupo disponible, proceder con la actualización
+    const actualizaciones = [];
+
+    for (const disciplinaId of idDisciplina) {
+      const horario = await Horario.findOneAndUpdate(
+        {
+          "dias.disciplinas._id": disciplinaId, // Buscar por ID de disciplina
+          "dias.disciplinas.cupo": { $gt: 0 }, // Validar que el cupo sea mayor a 0
+        },
+        {
+          $inc: { "dias.$[].disciplinas.$[disc].cupo": -1 }, // Reducir el cupo
+        },
+        {
+          arrayFilters: [{ "disc._id": disciplinaId, "disc.cupo": { $gt: 0 } }], // Filtrar la disciplina específica con cupo > 0
+          new: true, // Retornar el documento actualizado
+        }
+      );
+
+      // Si no se encuentra o no hay cupo disponible, agregar un mensaje de error
+      if (!horario) {
+        actualizaciones.push({ disciplinaId, message: "Cupo no disponible" });
+      } else {
+        actualizaciones.push({ disciplinaId, message: "Cupo reducido con éxito" });
+      }
+    }
+
+    // Verificar si todas las disciplinas tienen cupo actualizado correctamente
+    const errores = actualizaciones.filter((act) => act.message === "Cupo no disponible");
+    if (errores.length > 0) {
+      return res.status(400).json({
+        message: "Algunas disciplinas no tienen cupo disponible.",
+        detalles: errores,
+      });
+    }
+
+    const inscripcion = new Inscripcion({
+      ...req.body,
+      // fecha: `${day}/${month}/${year}`, // Fecha en formato DD/MM/YYYY
+      fecha: obtenerFechaHoraArgentina()
+    });
     await inscripcion.save();
-
-    // Crear el texto del correo
-    let clases = req.body.clases ? req.body.clases.join(', ') : 'No se especificaron clases';
 
     let mail = {
       from: "", // Agrega tu dirección de correo
       to: "josefinaalonsotorino@gmail.com",
       subject: "Inscripción Acorde 2025",
       text: `Alumno: ${req.body.nombre} ${req.body.apellido}.
-      Teléfono: ${req.body.numCel}.
-Clases: ${clases}.
+Padre / Madre: ${req.body.nombrePadre} ${req.body.apellidoPadre}.
+Teléfono: ${req.body.telefonoPadre}.
+Clases: ${req.body.disciplinas6a9.length > 0 ? `(Edad 6 a 9 años):  ${req.body.disciplinas6a9}` : `(Edad 10 a 15 años):  ${req.body.disciplinas10a15}`}.
+Comentarios: ${req.body.comentario}.
 `,
     };
 
@@ -158,16 +244,18 @@ Clases: ${clases}.
       console.error("Error al enviar el correo:", error);
     }
 
-    // Responder al cliente
-    res.status(201).json({ message: 'inscripción guardada con éxito', inscripcion });
-
+    res.status(200).json({
+      message: "Inscripción exitosa para todas las disciplinas.",
+      detalles: actualizaciones,
+      inscripcion,
+    });
   } catch (error) {
-    console.error("Error al guardar la preinscripción:", error);
-    res.status(500).json({ message: 'Error al guardar la preinscripción', error });
+    console.error("Error al inscribir:", error);
+    res.status(500).json({ message: "Error interno del servidor." });
   }
 };
 
-const mongoose = require('mongoose');
+
 
 const horarios = [
   {
