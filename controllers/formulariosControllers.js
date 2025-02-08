@@ -236,9 +236,24 @@ Comentarios: ${req.body.comentario}.
 `,
     };
 
+    let mailPadre = {
+      from: "", // Agrega tu dirección de correo
+      to: `${req.body.emailPadre}`,
+      subject: "Inscripción Acorde 2025",
+      text: `Recuerde pagar la inscripción de Alumno: ${req.body.nombre} ${req.body.apellido}.
+Padre / Madre: ${req.body.nombrePadre} ${req.body.apellidoPadre}.
+Teléfono: ${req.body.telefonoPadre}.
+Clases: ${req.body.disciplinas6a9.length > 0 ? `(Edad 6 a 9 años):  ${req.body.disciplinas6a9}` : `(Edad 10 a 15 años):  ${req.body.disciplinas10a15}`}.
+Monto a Pagar: $ ${req.body.disciplinas6a9.length == 1 || req.body.disciplinas10a15.length == 1? "35.000" : "55.000"}.
+Alias: Acorde2025.mp
+Enviar comprobante a: acorde.yb@gmail.com
+`,
+    };
+
     // Enviar el correo de forma asíncrona
     try {
       await transporter.sendMail(mail);
+      await transporter.sendMail(mailPadre);
       console.log("Correo enviado con éxito");
     } catch (error) {
       console.error("Error al enviar el correo:", error);
