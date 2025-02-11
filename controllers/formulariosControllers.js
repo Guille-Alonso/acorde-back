@@ -92,6 +92,19 @@ const listarPreInscriptos = async (req, res) => {
   }
 };
 
+const listarInscriptos = async (req, res) => {
+  try {
+   
+      const inscriptos = await Inscripcion.find();
+      res.status(200).json({ inscriptos });
+    
+  } catch (error) {
+    res
+      .status(error.code || 500)
+      .json({ message: error.message || "algo explotó :|" });
+  }
+};
+
 const obtenerHorarios = async (req, res) => {
   try {
     const horarios = await Horario.aggregate([
@@ -310,4 +323,4 @@ const datos = async (req, res) => {
 }
 
 
-module.exports = { guardarPreInscripcion, listarPreInscriptos, guardarInscripcion, datos , obtenerHorarios};
+module.exports = { guardarPreInscripcion, listarPreInscriptos, guardarInscripcion, datos , obtenerHorarios, listarInscriptos};
