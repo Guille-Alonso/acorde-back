@@ -3,9 +3,6 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const morgan = require('morgan');
 
-// const moment = require('moment-timezone');
-// moment.tz.setDefault('America/Argentina/Buenos_Aires');
-
 const connectDB = require('./config/db');
 const usersRoutes = require('./routes/usersRoutes')
 const preInscripcionRoutes = require('./routes/preInscripcionRoutes')
