@@ -283,6 +283,31 @@ Enviar comprobante a: acorde.yb@gmail.com
   }
 };
 
+const editarInscripcionAlumno = async (req, res) => {
+  try {
+    const { disciplinas6a9, disciplinas10a15 } = req.body;
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({ message: "ID de inscripción es requerido." });
+    }
+
+    const updatedData = {};
+    if (disciplinas6a9) updatedData.disciplinas6a9 = disciplinas6a9;
+    if (disciplinas10a15) updatedData.disciplinas10a15 = disciplinas10a15;
+
+    const resultado = await Inscripcion.findByIdAndUpdate(id, updatedData, { new: true });
+
+    if (!resultado) {
+      return res.status(404).json({ message: "Inscripción no encontrada." });
+    }
+
+    res.status(200).json({ message: "Inscripción actualizada correctamente.", data: resultado });
+  } catch (error) {
+    console.error("Error al editar inscripción:", error);
+    res.status(500).json({ message: "Error interno del servidor." });
+  }
+};
 
 
 const horarios = [
@@ -323,4 +348,4 @@ const datos = async (req, res) => {
 }
 
 
-module.exports = { guardarPreInscripcion, listarPreInscriptos, guardarInscripcion, datos , obtenerHorarios, listarInscriptos};
+module.exports = { guardarPreInscripcion, listarPreInscriptos, guardarInscripcion, datos , obtenerHorarios, listarInscriptos, editarInscripcionAlumno};

@@ -1,6 +1,6 @@
 const express = require('express');
 const { check } = require('express-validator');
-const { guardarPreInscripcion, listarPreInscriptos, guardarInscripcion, datos, obtenerHorarios, listarInscriptos } = require('../controllers/formulariosControllers');
+const { guardarPreInscripcion, listarPreInscriptos, guardarInscripcion, datos, obtenerHorarios, listarInscriptos, editarInscripcionAlumno } = require('../controllers/formulariosControllers');
 
 const router = express.Router();
 
@@ -38,4 +38,5 @@ router.get("/horarios", obtenerHorarios)
 
 router.get("/listarPreInscriptos", listarPreInscriptos)
 router.get("/listarInscriptos", listarInscriptos)
+router.patch("/editarInscripcionAlumno/:id", editarInscripcionAlumno)
 module.exports = router;
