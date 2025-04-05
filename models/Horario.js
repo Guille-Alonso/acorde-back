@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const DisciplinaSchema = new mongoose.Schema({
   disciplina: { type: String, required: true },
   cupo: { type: Number, default: 10 }, // Cupo inicializado en 8 por disciplina
+  estado: {type: Boolean, default: true}
 });
 
 const DiaSchema = new mongoose.Schema({

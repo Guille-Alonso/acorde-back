@@ -27,68 +27,21 @@ const UserSchema = new Schema(
       lowercase: true,
       required: [true, "El email es requerido"],
     },
-    foto: {
-      type: String,
-      trim: true,
-    },
     estado: {
-      //borrado logico
       type: Boolean,
       default: true,
     },
-    dni: {
-      type: String,
-      unique: true,
-    },
-    nacimiento: {
-      type: String,
-    },
-    afiliado: {
-      type: String,
-      unique: true,
-    },
-    // turno: {
-    //   type: String,
-    //   enum: ["mañana", "tarde", "noche", "intermedio"],
-    //   trim: true,
-    //   required: [true, "El turno es requerido"],
-    // },
-    // tipoDeUsuario: {
-    //   type: String,
-    //   enum: [
-    //     "admin",
-    //     "visualizador",
-    //     "supervisor",
-    //     "estadística",
-    //     "administración",
-    //     "tránsito"
-    //   ],
-    //   trim: true,
-    //   required: [true, "El tipo de usuario es requerido"],
-    // },
 
     contraseña: {
       type: String,
       trim: true,
       required: [true, "La contraseña es obligatoria"],
     },
-    relevamientoHabilitado: {
-      type: Boolean,
-      default: false
-    },
-    noticias: {
-      type: Boolean,
-      default: true
-    },
-    turno: {
-      type: Schema.Types.ObjectId,
-      ref: "Turno",
-      required: [true, "El turno es requerido"],
-    },
+    
     tipoDeUsuario: {
       type: Schema.Types.ObjectId,
       ref: "Rol",
-      required: [true, "El rol es requerido"],
+      // required: [true, "El rol es requerido"],
     },
   },
   {

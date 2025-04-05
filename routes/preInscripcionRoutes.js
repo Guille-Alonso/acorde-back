@@ -1,6 +1,7 @@
 const express = require('express');
 const { check } = require('express-validator');
 const { guardarPreInscripcion, listarPreInscriptos, guardarInscripcion, datos, obtenerHorarios, listarInscriptos, editarInscripcionAlumno } = require('../controllers/formulariosControllers');
+const auth = require('../middlewares/auth');
 
 const router = express.Router();
 
@@ -36,7 +37,7 @@ router.post(
 
 router.get("/horarios", obtenerHorarios)
 
-router.get("/listarPreInscriptos", listarPreInscriptos)
-router.get("/listarInscriptos", listarInscriptos)
-router.patch("/editarInscripcionAlumno/:id", editarInscripcionAlumno)
+router.get("/listarPreInscriptos",auth, listarPreInscriptos)
+router.get("/listarInscriptos",auth, listarInscriptos)
+router.patch("/editarInscripcionAlumno/:id",auth, editarInscripcionAlumno)
 module.exports = router;
