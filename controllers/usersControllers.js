@@ -108,7 +108,7 @@ const getAuthStatus = async (req, res) => {
   try {
     const id = req.id;
 
-    const user = await User.findById(id).populate("turno").populate("tipoDeUsuario");
+    const user = await User.findById(id);
     if (!user) throw new CustomError("Autenticación fallida", 401);
     res.status(200).json({ user });
   } catch (error) {
@@ -124,13 +124,14 @@ const login = async (req, res) => {
     const { nombreUsuario, contraseña } = req.body;
     if (!nombreUsuario || !contraseña)
       throw new CustomError("Usuario y contraseña son requeridas", 400);
-    const user = await User.findOne({ nombreUsuario }).populate("turno").populate("tipoDeUsuario");
+    const user = await User.findOne({ nombreUsuario });
     if (!user) throw new CustomError("Usuario no encontrado", 404);
     const passOk = await bcrypt.compare(contraseña, user.contraseña);
     if (!passOk) throw new CustomError("Contraseña incorrecta", 400);
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
-      expiresIn: "8h",
+      expiresIn: "24h",
     });
+ 
     res
       .status(200)
       .json({ message: "Ingreso correcto", ok: true, user, token });
@@ -145,7 +146,7 @@ const agregarUsuario = async (req, res) => {
   try {
     console.log(req.body);
 
-    const { userName, name, dni, numAfil, email, fechaNac, turno, password, perfilAltaUsuarios, repeatPassword, photo } = req.body;
+    const { userName, name, email, password, repeatPassword } = req.body;
 
     if (password !== repeatPassword)
       throw new CustomError("Las contraseñas no coinciden", 400);
@@ -154,14 +155,8 @@ const agregarUsuario = async (req, res) => {
     const user = new User({
       nombreUsuario: userName,
       nombre: name,
-      dni,
-      nacimiento: fechaNac,
       email,
-      afiliado: numAfil,
-      turno,
-      tipoDeUsuario: perfilAltaUsuarios.toLowerCase(),//cambiar aqui y en front (enviar como tipoDeUsuario al id)
       contraseña: passwordEncrypted,
-      foto: photo,
     });
     await user.save();
     res.status(200).json({ message: "Usuario creado con exito" });
