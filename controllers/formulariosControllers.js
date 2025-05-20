@@ -4,6 +4,7 @@ const Inscripcion = require('../models/Inscripcion');
 const PreInscripcion = require('../models/PreInscripcion');
 const { transporter } = require('../utils/sendEmail');
 const { obtenerFechaHoraArgentina } = require('../utils/obtenerFechaYHora');
+const InscripcionKids = require('../models/InscripcionKids');
 
 // const guardarPreInscripcion = async (req, res) => {
 
@@ -96,6 +97,19 @@ const listarInscriptos = async (req, res) => {
   try {
    
       const inscriptos = await Inscripcion.find();
+      res.status(200).json({ inscriptos });
+    
+  } catch (error) {
+    res
+      .status(error.code || 500)
+      .json({ message: error.message || "algo explotó :|" });
+  }
+};
+
+const listarInscriptosKids = async (req, res) => {
+  try {
+   
+      const inscriptos = await InscripcionKids.find()
       res.status(200).json({ inscriptos });
     
   } catch (error) {
@@ -283,6 +297,62 @@ Enviar comprobante a: acorde.yb@gmail.com
   }
 };
 
+const guardarInscripcionKids = async (req, res) => {
+
+  try {
+
+    const inscripcion = new InscripcionKids({
+      ...req.body,
+      // fecha: `${day}/${month}/${year}`, // Fecha en formato DD/MM/YYYY
+      fecha: obtenerFechaHoraArgentina()
+    });
+    await inscripcion.save();
+
+    let mail = {
+      from: "", // Agrega tu dirección de correo
+      to: "josefinaalonsotorino@gmail.com",
+      subject: "Inscripción Acorde 2025",
+      text: `Alumno: ${req.body.nombre} ${req.body.apellido}.
+Padre / Madre: ${req.body.nombrePadre} ${req.body.apellidoPadre}.
+Teléfono: ${req.body.telefonoPadre}.
+Clases para edad 4-5 años Día: ${req.body.dia}.
+Comentarios: ${req.body.comentario}.
+`,
+    };
+
+    let mailPadre = {
+      from: "", // Agrega tu dirección de correo
+      to: `${req.body.emailPadre}`,
+      subject: "Inscripción Acorde 2025",
+      text: `Recuerde pagar la inscripción de Alumno: ${req.body.nombre} ${req.body.apellido}.
+Padre / Madre: ${req.body.nombrePadre} ${req.body.apellidoPadre}.
+Teléfono: ${req.body.telefonoPadre}.
+Clases para edad 4-5 años Día: ${req.body.dia}.
+Monto a Pagar: $ 40.000
+Alias: Acorde2025.mp
+Enviar comprobante a: acorde.yb@gmail.com
+`,
+    };
+
+    // Enviar el correo de forma asíncrona
+    try {
+      await transporter.sendMail(mail);
+      await transporter.sendMail(mailPadre);
+      console.log("Correo enviado con éxito");
+    } catch (error) {
+      console.error("Error al enviar el correo:", error);
+    }
+
+    res.status(200).json({
+      message: "Inscripción exitosa",
+      inscripcion,
+    });
+  } catch (error) {
+    console.error("Error al inscribir:", error);
+    res.status(500).json({ message: "Error interno del servidor." });
+  }
+};
+
 const editarInscripcionAlumno = async (req, res) => {
   try {
     const { disciplinas6a9, disciplinas10a15 } = req.body;
@@ -348,4 +418,4 @@ const datos = async (req, res) => {
 }
 
 
-module.exports = { guardarPreInscripcion, listarPreInscriptos, guardarInscripcion, datos , obtenerHorarios, listarInscriptos, editarInscripcionAlumno};
+module.exports = { guardarPreInscripcion, listarPreInscriptos, guardarInscripcion, datos , obtenerHorarios, listarInscriptos, editarInscripcionAlumno, guardarInscripcionKids, listarInscriptosKids};
