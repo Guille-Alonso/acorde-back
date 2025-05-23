@@ -119,38 +119,48 @@ const listarInscriptosKids = async (req, res) => {
   }
 };
 
+//! CON CONTROL DE CUPO
+// const obtenerHorarios = async (req, res) => {
+//   try {
+//     const horarios = await Horario.aggregate([
+//       {
+//         $addFields: {
+//           dias: {
+//             $map: {
+//               input: "$dias", // Iteramos sobre el array `dias`
+//               as: "dia",
+//               in: {
+//                 // Filtramos las disciplinas de cada dia
+//                 $mergeObjects: [
+//                   "$$dia",
+//                   {
+//                     disciplinas: {
+//                       $filter: {
+//                         input: "$$dia.disciplinas", // Filtramos `disciplinas` dentro de cada `dia`
+//                         as: "disciplina",
+//                         cond: { $gt: ["$$disciplina.cupo", 0] } // Solo dejamos las disciplinas con cupo > 0
+//                       }
+//                     }
+//                   }
+//                 ]
+//               }
+//             }
+//           }
+//         }
+//       },
+//       {
+//         $match: { "dias.disciplinas.0": { $exists: true } } // Solo incluir días que tienen disciplinas con cupo > 0
+//       }
+//     ]);
+//     res.status(200).json({ horarios });
+//   } catch (error) {
+//     res.status(error.code || 500).json({ message: error.message || "Algo explotó :|" });
+//   }
+// };
+
 const obtenerHorarios = async (req, res) => {
   try {
-    const horarios = await Horario.aggregate([
-      {
-        $addFields: {
-          dias: {
-            $map: {
-              input: "$dias", // Iteramos sobre el array `dias`
-              as: "dia",
-              in: {
-                // Filtramos las disciplinas de cada dia
-                $mergeObjects: [
-                  "$$dia",
-                  {
-                    disciplinas: {
-                      $filter: {
-                        input: "$$dia.disciplinas", // Filtramos `disciplinas` dentro de cada `dia`
-                        as: "disciplina",
-                        cond: { $gt: ["$$disciplina.cupo", 0] } // Solo dejamos las disciplinas con cupo > 0
-                      }
-                    }
-                  }
-                ]
-              }
-            }
-          }
-        }
-      },
-      {
-        $match: { "dias.disciplinas.0": { $exists: true } } // Solo incluir días que tienen disciplinas con cupo > 0
-      }
-    ]);
+    const horarios = await Horario.find(); // Obtener todos los documentos sin filtrar nada
     res.status(200).json({ horarios });
   } catch (error) {
     res.status(error.code || 500).json({ message: error.message || "Algo explotó :|" });
