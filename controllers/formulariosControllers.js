@@ -288,13 +288,13 @@ Enviar comprobante a: acorde.yb@gmail.com
     };
 
     // Enviar el correo de forma asíncrona
-    try {
-      await transporter.sendMail(mail);
-      await transporter.sendMail(mailPadre);
-      console.log("Correo enviado con éxito");
-    } catch (error) {
-      console.error("Error al enviar el correo:", error);
-    }
+    // try {
+    //   await transporter.sendMail(mail);
+    //   await transporter.sendMail(mailPadre);
+    //   console.log("Correo enviado con éxito");
+    // } catch (error) {
+    //   console.error("Error al enviar el correo:", error);
+    // }
 
     res.status(200).json({
       message: "Inscripción exitosa para todas las disciplinas.",
@@ -345,13 +345,13 @@ Enviar comprobante a: acorde.yb@gmail.com
     };
 
     // Enviar el correo de forma asíncrona
-    try {
-      await transporter.sendMail(mail);
-      await transporter.sendMail(mailPadre);
-      console.log("Correo enviado con éxito");
-    } catch (error) {
-      console.error("Error al enviar el correo:", error);
-    }
+    // try {
+    //   await transporter.sendMail(mail);
+    //   await transporter.sendMail(mailPadre);
+    //   console.log("Correo enviado con éxito");
+    // } catch (error) {
+    //   console.error("Error al enviar el correo:", error);
+    // }
 
     res.status(200).json({
       message: "Inscripción exitosa",
