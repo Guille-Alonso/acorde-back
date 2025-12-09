@@ -1,6 +1,6 @@
 const express = require('express');
 const { check } = require('express-validator');
-const { guardarPreInscripcion, listarPreInscriptos, guardarInscripcion, datos, obtenerHorarios, listarInscriptos, editarInscripcionAlumno, guardarInscripcionKids, listarInscriptosKids } = require('../controllers/formulariosControllers');
+const { guardarPreInscripcion, guardarPreInscripcion2026, listarPreInscriptos, guardarInscripcion, datos, obtenerHorarios, listarInscriptos, editarInscripcionAlumno, guardarInscripcionKids, listarInscriptosKids } = require('../controllers/formulariosControllers');
 const auth = require('../middlewares/auth');
 
 const router = express.Router();
@@ -28,6 +28,11 @@ router.post(
 router.post(
   '/inscripcion',
   guardarInscripcion
+);
+
+router.post(
+  '/preInscripcion2026',
+  guardarPreInscripcion2026
 );
 
 router.post(
