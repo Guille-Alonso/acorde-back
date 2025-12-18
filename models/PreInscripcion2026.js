@@ -11,6 +11,6 @@ const PreInscripcion2026Schema = new mongoose.Schema({
   emailPadre: { type: String, required: true },
   clases: { type: [String], required: true },
   comentario: { type: String },
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model('PreInscripcion2026', PreInscripcion2026Schema);

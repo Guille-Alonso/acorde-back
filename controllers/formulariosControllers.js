@@ -94,6 +94,21 @@ const listarPreInscriptos = async (req, res) => {
   }
 };
 
+const listarPreInscriptos2026 = async (req, res) => {
+  try {
+    const preInscriptos = await PreInscripcion2026.find().sort({ createdAt: -1 });
+    const result = preInscriptos.map(doc => ({
+      ...doc.toObject(),
+      fecha: doc.createdAt ? doc.createdAt.toISOString() : ""
+    }));
+    res.status(200).json({ preInscriptos: result });
+  } catch (error) {
+    res
+      .status(error.code || 500)
+      .json({ message: error.message || "algo explotó :|" });
+  }
+};
+
 const listarInscriptos = async (req, res) => {
   try {
    
@@ -504,4 +519,4 @@ const guardarPreInscripcion2026 = async (req, res) => {
 };
 
 
-module.exports = { guardarPreInscripcion, guardarPreInscripcion2026, listarPreInscriptos, guardarInscripcion, datos , obtenerHorarios, listarInscriptos, editarInscripcionAlumno, guardarInscripcionKids, listarInscriptosKids};
+module.exports = { guardarPreInscripcion, guardarPreInscripcion2026, listarPreInscriptos, listarPreInscriptos2026, guardarInscripcion, datos , obtenerHorarios, listarInscriptos, editarInscripcionAlumno, guardarInscripcionKids, listarInscriptosKids};
