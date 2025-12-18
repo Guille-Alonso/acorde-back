@@ -1,6 +1,6 @@
 const express = require('express');
 const { check } = require('express-validator');
-const { guardarPreInscripcion, listarPreInscriptos, guardarInscripcion, datos, obtenerHorarios, listarInscriptos, editarInscripcionAlumno, guardarInscripcionKids, listarInscriptosKids } = require('../controllers/formulariosControllers');
+const { guardarPreInscripcion, guardarPreInscripcion2026, listarPreInscriptos, listarPreInscriptos2026, guardarInscripcion, datos, obtenerHorarios, listarInscriptos, editarInscripcionAlumno, guardarInscripcionKids, listarInscriptosKids } = require('../controllers/formulariosControllers');
 const auth = require('../middlewares/auth');
 
 const router = express.Router();
@@ -31,6 +31,11 @@ router.post(
 );
 
 router.post(
+  '/preInscripcion2026',
+  guardarPreInscripcion2026
+);
+
+router.post(
   '/inscripcionKids',
   guardarInscripcionKids
 );
@@ -43,6 +48,7 @@ router.post(
 router.get("/horarios", obtenerHorarios)
 
 router.get("/listarPreInscriptos",auth, listarPreInscriptos)
+router.get("/listarPreInscriptos2026",auth, listarPreInscriptos2026)
 router.get("/listarInscriptos",auth, listarInscriptos)
 router.get("/listarInscriptosKids",auth, listarInscriptosKids)
 router.patch("/editarInscripcionAlumno/:id",auth, editarInscripcionAlumno)

@@ -2,6 +2,7 @@ const { default: mongoose } = require('mongoose');
 const Horario = require('../models/Horario');
 const Inscripcion = require('../models/Inscripcion');
 const PreInscripcion = require('../models/PreInscripcion');
+const PreInscripcion2026 = require('../models/PreInscripcion2026');
 const { transporter } = require('../utils/sendEmail');
 const { obtenerFechaHoraArgentina } = require('../utils/obtenerFechaYHora');
 const InscripcionKids = require('../models/InscripcionKids');
@@ -86,6 +87,21 @@ const listarPreInscriptos = async (req, res) => {
       const preInscriptos = await PreInscripcion.find();
       res.status(200).json({ preInscriptos });
     
+  } catch (error) {
+    res
+      .status(error.code || 500)
+      .json({ message: error.message || "algo explotó :|" });
+  }
+};
+
+const listarPreInscriptos2026 = async (req, res) => {
+  try {
+    const preInscriptos = await PreInscripcion2026.find().sort({ createdAt: -1 });
+    const result = preInscriptos.map(doc => ({
+      ...doc.toObject(),
+      fecha: doc.createdAt ? doc.createdAt.toISOString() : ""
+    }));
+    res.status(200).json({ preInscriptos: result });
   } catch (error) {
     res
       .status(error.code || 500)
@@ -428,4 +444,79 @@ const datos = async (req, res) => {
 }
 
 
-module.exports = { guardarPreInscripcion, listarPreInscriptos, guardarInscripcion, datos , obtenerHorarios, listarInscriptos, editarInscripcionAlumno, guardarInscripcionKids, listarInscriptosKids};
+const guardarPreInscripcion2026 = async (req, res) => {
+  try {
+    const {
+      nombre,
+      apellido,
+      edad,
+      numCel,
+      nombrePadre,
+      telefonoPadre,
+      apellidoPadre,
+      emailPadre,
+      comentario,
+      disciplinas4a5 = [],
+      disciplinas6a9 = [],
+      disciplinas10a15 = [],
+      idDisciplina = []
+    } = req.body;
+
+    const clases = [].concat(
+      Array.isArray(disciplinas4a5) ? disciplinas4a5 : (disciplinas4a5 ? [disciplinas4a5] : []),
+      Array.isArray(disciplinas6a9) ? disciplinas6a9 : (disciplinas6a9 ? [disciplinas6a9] : []),
+      Array.isArray(disciplinas10a15) ? disciplinas10a15 : (disciplinas10a15 ? [disciplinas10a15] : []),
+      Array.isArray(idDisciplina) ? idDisciplina.filter(Boolean) : []
+    ).filter(Boolean).map(String);
+
+    if (!nombre || !apellido || !edad || !nombrePadre || !telefonoPadre || !apellidoPadre || !emailPadre) {
+      return res.status(400).json({ message: 'Faltan campos obligatorios' });
+    }
+
+    if (!Array.isArray(clases) || clases.length === 0) {
+      return res.status(400).json({ message: 'Debe seleccionar al menos una clase' });
+    }
+
+    const pre = new PreInscripcion2026({
+      nombre,
+      apellido,
+      edad: Number(edad),
+      numCel,
+      nombrePadre,
+      telefonoPadre,
+      apellidoPadre,
+      emailPadre,
+      clases,
+      comentario
+    });
+
+    await pre.save();
+
+//     const mail = {
+//       from: '',
+//       to: 'josefinaalonsotorino@gmail.com',
+//       subject: 'Pre-Inscripción Acorde 2026',
+//       text: `Alumno: ${nombre} ${apellido}.
+// Padre / Madre: ${nombrePadre} ${apellidoPadre}.
+// Teléfono: ${telefonoPadre}.
+// Clases: ${clases.join(', ')}.
+// Comentarios: ${comentario || 'N/A'}.
+// `
+//     };
+
+//     try {
+//       await transporter.sendMail(mail);
+//       console.log('Correo preinscripción 2026 enviado');
+//     } catch (err) {
+//       console.error('Error al enviar correo preinscripción 2026:', err);
+//     }
+
+    res.status(201).json({ message: 'Preinscripción 2026 guardada con éxito', preInscripcion2026: pre });
+  } catch (error) {
+    console.error('Error guardarPreInscripcion2026:', error);
+    res.status(500).json({ message: 'Error interno al guardar preinscripción 2026', error });
+  }
+};
+
+
+module.exports = { guardarPreInscripcion, guardarPreInscripcion2026, listarPreInscriptos, listarPreInscriptos2026, guardarInscripcion, datos , obtenerHorarios, listarInscriptos, editarInscripcionAlumno, guardarInscripcionKids, listarInscriptosKids};
