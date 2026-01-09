@@ -96,10 +96,21 @@ const listarPreInscriptos = async (req, res) => {
 
 const listarPreInscriptos2026 = async (req, res) => {
   try {
-    const preInscriptos = await PreInscripcion2026.find().sort({ createdAt: -1 });
+    const preInscriptos = await PreInscripcion2026.find();
     const result = preInscriptos.map(doc => ({
       ...doc.toObject(),
-      fecha: doc.createdAt ? doc.createdAt.toISOString() : ""
+      fecha: doc.createdAt
+  ? doc.createdAt.toLocaleString("es-AR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      timeZone: "America/Argentina/Buenos_Aires",
+    })
+  : "",
+
     }));
     res.status(200).json({ preInscriptos: result });
   } catch (error) {
