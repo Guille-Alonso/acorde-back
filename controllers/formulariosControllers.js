@@ -121,6 +121,32 @@ const listarPreInscriptos2026 = async (req, res) => {
   }
 };
 
+const listarPreInscriptos2027 = async (req, res) => {
+  try {
+    const preInscriptos = await PreInscripcion2027.find();
+    const result = preInscriptos.map(doc => ({
+      ...doc.toObject(),
+      fecha: doc.createdAt
+  ? doc.createdAt.toLocaleString("es-AR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      timeZone: "America/Argentina/Buenos_Aires",
+    })
+  : "",
+
+    }));
+    res.status(200).json({ preInscriptos: result });
+  } catch (error) {
+    res
+      .status(error.code || 500)
+      .json({ message: error.message || "algo explotó :|" });
+  }
+};
+
 const listarInscriptos = async (req, res) => {
   try {
    
@@ -604,4 +630,4 @@ const guardarPreInscripcion2027 = async (req, res) => {
   }
 };
 
-module.exports = { guardarPreInscripcion, guardarPreInscripcion2026, listarPreInscriptos, listarPreInscriptos2026, guardarInscripcion, datos , obtenerHorarios, listarInscriptos, editarInscripcionAlumno, guardarInscripcionKids, listarInscriptosKids, guardarPreInscripcion2027 };
+module.exports = { guardarPreInscripcion, guardarPreInscripcion2026, listarPreInscriptos, listarPreInscriptos2026, guardarInscripcion, datos , obtenerHorarios, listarInscriptos, editarInscripcionAlumno, guardarInscripcionKids, listarInscriptosKids, guardarPreInscripcion2027, listarPreInscriptos2027 };
